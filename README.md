@@ -11,6 +11,6 @@ Interactive d3 Tree diagram with Bootstrap Slider panel, Bootstrap Navbar, node 
 ## Data
 - Data is loaded directly through a json variable (js/data.js) which was needed at the moment of development. But feel free to adjust to your needs. d3 accepts other types of data loading (e.g csv).
 
-- Data folder provides a pyhthon script to conver a CSV file into json, which is then copied to the data.js file (work in progress to automate this piece)
+- Data folder provides a pyhthon script to convert a CSV file into json, which is then copied to the data.js file (work in progress to automate this piece)
 
-- The diagram was only adjusted to read 3 leves of data
+- The diagram was only adjusted to read 3 levels of data.
