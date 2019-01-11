@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+	<meta charset="UTF-8">
+	<title>Version 2 to dynamically change the tree layout size</title>
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-select.min.css">
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+	<ul class="navbar-nav mr-auto">
+		<div class="btn-group btn-group-toggle" data-toggle="buttons">
+			<label class="btn btn-secondary active">
+				<input type="radio" name="expand" id="expand_all_option" autocomplete="off" checked>Expand All
+			</label>
+			<label class="btn btn-secondary">
+				<input type="radio" name="expand" id="collapse_all_option" autocomplete="off">Collapse All
+			</label>
+		</div>
+		
+		<li class="nav-item">
+			<a class="nav-link" href="#"></a>
+		</li>
+		
+		<div class="btn-group btn-group-toggle node_selection_group" data-toggle="buttons" >
+			<label class="btn btn-secondary active">
+				<input type="checkbox" class="node_selection" name="node_selection[]" autocomplete="off"  id="node_selection_streams" checked>Streams
+			</label>
+			<label class="btn btn-secondary active">
+				<input type="checkbox" class="node_selection" name="node_selection" autocomplete="off"  id="node_selection_apps" checked>Apps
+			</label>
+			<label class="btn btn-secondary active">
+				<input type="checkbox" class="node_selection" name="node_selection" autocomplete="off"  id="node_selection_sheets" checked>Sheets
+			</label>
+		</div>		
+	</ul>
+	
+	<div class="col-lg-5">
+		<!-- <input class="form-control mr-lg-2" type="search" placeholder="Search" aria-label="Search Node"> -->
+		<select class="selectpicker show-tick" data-live-search="true" title="Find a Stream, App or Sheet" data-width="100%">
+			<optgroup label="Streams" id="select_streams">
+			</optgroup>
+			<optgroup label="Apps" id="select_apps">
+			</optgroup>
+			<optgroup label="Sheets" id="select_sheets">
+			</optgroup>
+		</select>
+
+	</div>
+
+</nav>
+
+	<!--<div class="container row mt-4">
+		<div class="col">
+			<button type="button" class="btn btn-danger" onclick="">Streams</button>
+			<button type="button" class="btn btn-primary" onclick="">Apps</button>
+			<button type="button" class="btn btn-outline-dark" onclick="">Sheets</button>
+		</div>
+	</div>
+	 -->
+	
+	<div id="slider" class="side-panel " >
+		<span class="slider-title" id="sheet_name"></span><br/>
+		<hr/>
+		<p style="font-weight: bold">Application:</p>
+		<p id="app_name"></p>
+		<p style="font-weight: bold">Stream:</p>
+		<p id="stream_name"></p>
+		<hr/>		
+		<span class="slider-title">Access:</span><br/>
+		
+		<div style="position:absolute; 
+                bottom: 0; 
+                width: 96%;
+				margin-bottom: 10px;
+				">
+			<hr/>
+			<a href="" id="node_url" role="button" class="btn btn-primary" target="_new">Jump to</a>
+			<span class="slider-close"><button type="button" id="slider-close-button" class="btn btn-outline-dark">Close</button></span>		
+		</div>
+		
+	</div>
+	
+	<div id="render"></div>
+	
+	<script src="js/jquery-3.2.1.slim.min.js"></script>
+	<script src="js/jquery.slidereveal.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/data.js"></script>
+	<script src="js/d3.v3.min.js"></script>
+	<script src="js/index.js"></script>
+	<script src="js/bootstrap-select.min.js"></script>
+	<script>
+		$('#slider').slideReveal({
+			trigger: $("#slider-close-button"),
+			position: "right",
+			push: false,
+			overlay: true	
+		});	
+	</script>
+</body>
+
+</html>

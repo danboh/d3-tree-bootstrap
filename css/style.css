@@ -1,0 +1,41 @@
+#render {
+  overflow: auto;
+  text-align: center;
+}
+
+#render .node {
+  cursor: pointer;
+}
+
+#render .node circle {
+	fill: #fff;
+	/* stroke: #000000; */
+	stroke-width: 2px;
+}
+
+#render .node text {
+  font: 12px !important;
+}
+
+#render .link {
+  fill: none;
+  stroke: #e6e6e6;
+  stroke-width: 5px;
+}
+
+
+.side-panel{
+	background-color: #FFF;
+	padding: 10px;
+}
+
+.slider-title{
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.slider-close{
+	float: right;
+}
+
+
