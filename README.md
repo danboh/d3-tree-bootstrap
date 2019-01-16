@@ -14,4 +14,4 @@ Interactive d3 Tree diagram with Bootstrap Slider panel, Bootstrap Navbar, node 
 - Search Field is loaded with the same data as the d3 tree
 
 ## Demo
-You can see a live demo at: https://danboh.github.io/d3-tree-bootstrap
+You can see a live demo at: https://danboh.github.io/d3-tree-bootstrap/
