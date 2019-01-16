@@ -12,3 +12,6 @@ Interactive d3 Tree diagram with Bootstrap Slider panel, Bootstrap Navbar, node 
 - Data is loaded through a CSV file
 - The diagram was only adjusted to read 3 levels of data
 - Search Field is loaded with the same data as the d3 tree
+
+## Demo
+You can see a live demo at: https://danboh.github.io/d3-tree-bootstrap
