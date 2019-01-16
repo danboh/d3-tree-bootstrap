@@ -23,13 +23,90 @@ var svg = d3.select("#render").append("svg")
 	.append("g")
 	.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-root = data;
+
+function data_load(){
+	// load the external data
+	d3.csv("data/data.csv", function(error, data) {
+
+		// *********** Convert flat data into a nice tree ***************
+		// create a name: node map
+		var dataMap = data.reduce(function(map, node) {
+			map[node.id] = node;
+			return map;
+		}, {});
+		
+		// create the tree array
+		var treeData = [];
+		data.forEach(function(node) {
+			// add to parent
+			var parent = dataMap[node.parent_id];
+			if (parent) {
+				// create child array if it doesn't exist
+				(parent.children || (parent.children = []))
+					// add node to child array
+					.push(node);
+			} else {
+				// parent is null or missing
+				treeData.push(node);
+			}
+		});
+
+		root = treeData[0];
+		root.x0 = height / 2;
+		root.y0 = 0;
+		update(root);
+		data = treeData[0];
+		load_search_select(treeData[0]);
+	});
+
+}	
+
+// load the external data
+/* d3.csv("data/data.csv", function(error,links) {
+	if (error) throw error;
+	var nodesByName = {};
+	
+//	var id = 0;
+	// Create nodes for each unique source and target.
+ 	links.forEach(function(link) {
+		var parent = link.parent = nodeByName(id, link.parent, link.created, link.changed, link.url),
+		child = link.child = nodeByName(id, link.child, link.created, link.changed, link.url);
+		if (parent.children) parent.children.push(child);
+		else parent.children = [child];
+		id = id + 1;
+		console.log(nodesByName);
+	}); 
+	
+	// Extract the root node and compute the layout.
+	var nodes = tree.nodes(links[0].parent);
+	
+	console.log(links[0].parent);
+	
+	
+	function nodeByName(name, node) {
+		
+		return nodesByName[name] || (nodesByName[name] = { 
+			name: name, 
+			created: (node.created ? node.created: ''), 
+			changed: (node.changed ? node.changed : ''),
+			url: ( node.url ? node.url : '')
+		});
+		
+	}
+	
+	
+	root = links[0].parent;
+	root.x0 = height / 2;
+	root.y0 = 0;
+	update(root);
+}); */
+	
+/* root = data;
 root.x0 = height / 2;
 root.y0 = 0;
+update(root); */
 
-//root.children.forEach(collapse);
-update(root);
-
+ 
 function collapse(d) {
 	if (d.children) {
 		d._children = d.children;
@@ -79,6 +156,7 @@ function update(source) {
 		.attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
 		.text(function(d) {  return d.children || d._children ? d.name + " (" + d.children.length + ")" : d.name; })
 		.style("fill-opacity", 1e-6)
+		.attr("id",function(d) { return "text_id_" + d.id })
 		.on("mousedown", function(d){ d.children || d._children ? '' : nodeClick(d,this) })
 		//.call(wrap, 100); // wrap the text in <= 30 pixels
 
@@ -282,8 +360,9 @@ function hideAppsAction(){
 
 
 function nodeClick(d,i) {
-	
-	//d3.select(i).style("font-weight", "bold");
+	//console.log(i);
+
+	if(i){ d3.select(i).style("font-weight", "bold"); }
 	
 	var find = flatten(root).find(function(e) {
 	if (e.id == d.id)
@@ -297,7 +376,6 @@ function nodeClick(d,i) {
 		find = find.parent;
     }
 	update(find);
-	
 	
 	d3.selectAll("path").style("stroke", function(d) {
 		if (d.target.path_color) {
@@ -325,15 +403,20 @@ function nodeClick(d,i) {
 				find = find.parent;
 			}
 			update(find);
-			//d3.select(i).style("font-weight", "");
+			if(i){ d3.select(i).style("font-weight", ""); }
 			d3.selectAll("path").style("stroke", "#e6e6e6");
 		},
 	});
 	
 	$( "#sheet_name" ).empty().append( d.name );
+	$( "#created_at" ).empty().append( d.created_at);	
+	$( "#published_on" ).empty().append( d.published_on);	
+	$( "#last_loaded" ).empty().append( d.last_loaded);	
+	
+	$( "#owner" ).empty().append( d.owner );
 	$( "#app_name" ).empty().append( d.parent.name );
 	$( "#stream_name" ).empty().append( d.parent.parent ? d.parent.parent.name : '' );
-	$( "#node_url" ).attr("href","");
+	$( "#node_url" ).attr("href",d.url);
 	slider.slideReveal("toggle", false);
 
 	//d3.select(this).transition().style("fill", "#fff" );
@@ -355,10 +438,13 @@ function flatten(root) {
 	return nodes;
 }
 
-function load_select(source, id)
-{
+function load_search_select(source){
+		
+	
+	//$( "#select_streams" ).append( '<option value="1" selected>Select</option>');
+	
 	$.each(source.children, function( key, value ) {
-	$( "#select_streams" ).append( "<option value='"+value.id+"'>"+value.name+"</option>" );
+		$( "#select_streams" ).append( "<option value='"+value.id+"'>"+value.name+"</option>" );
 		$.each( value.children, function( key, value ) {
 			$( "#select_apps" ).append( "<option value='"+value.id+"'>"+value.name+"</option>" );
 			$.each( value.children, function( key, value ) {
@@ -366,21 +452,49 @@ function load_select(source, id)
 			});
 		});
 	});
+	$('.selectpicker').selectpicker('refresh');
 }
 
-load_select(data);
+//load_search_select(root);	
 
+async function refresh(){
+	let data_load = new Promise((resolve, reject) => {
+		$('#loading_modal').modal({
+			backdrop: 'static',
+			keyboard: false,
+		});
+		$('#loading_modal').modal('show');
+		this.data_load();
+		setTimeout(() => resolve("done!"), 1000)
+	});
+	
+	let result = await data_load; // wait till the promise resolves (*)
+
+	$('#loading_modal').modal('hide'); 
+	$('#data_refreshed_message').addClass('visible').removeClass('invisible');
+}
+
+/* function refresh_(){
+	$('#loading_modal').modal({
+		backdrop: 'static',
+		keyboard: false,
+	});
+	$('#loading_modal').modal('show');
+	setTimeout(function(){ 
+		$('#loading_modal').modal('hide'); 
+		$('#data_refreshed_message').addClass('visible').removeClass('invisible');
+	}, 1000);
+
+} */
 
 $(document).ready(function () {
+	
+	data_load();
 	
 	$('.selectpicker').on('change', function() {
 		node_id = this.value;
 		var find = flatten(root).find(function(e) {
 			if (e.id == node_id ){
-				//Show Streams
-				//Show Apps
-				
-				//Show Sheets
 				if(e.depth == 3){
 					expandAll();
 				}
@@ -417,11 +531,11 @@ $(document).ready(function () {
 	$('#node_selection_sheets').on('change', function() {
 		if (this.checked) {
 			//Show Sheets
-			console.log('Show Sheets');
+			//console.log('Show Sheets');
 			expandAll();
 		}else{
 			//Hide Sheets
-			console.log('Hide Sheets');
+			//console.log('Hide Sheets');
 			hideSheetsAction();
 		}
 	});
@@ -429,12 +543,17 @@ $(document).ready(function () {
 	$('#node_selection_apps').on('change', function() {
 		if (this.checked) {
 			//Show Sheets
-			console.log('Show Apps');
+			//console.log('Show Apps');
 		}else{
 			//Hide Sheets
-			console.log('Hide Apps');
+			//console.log('Hide Apps');
 			hideAppsAction();
 		}
 	});
+	
+	$(function () {
+		$('[data-toggle="tooltip"]').tooltip()
+	});
+	
 	
 });

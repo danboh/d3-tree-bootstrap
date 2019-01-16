@@ -38,4 +38,21 @@
 	float: right;
 }
 
-
+#legend {
+	float:left;
+	position:absolute;
+	overflow: auto;
+	top: 80px;
+	left: 20px;
+	width: 200px; 
+	padding: 10px;  
+	font-family: arial; 
+}
+.circle {
+  
+  height: 25px;
+  width: 25px;
+  border-radius: 100%;
+  display: inline-block;
+  
+}
