@@ -9,8 +9,9 @@ Interactive d3 Tree diagram with Bootstrap Slider panel, Bootstrap Navbar, node 
 - [Bootstrap Select](https://developer.snapappointments.com/bootstrap-select/)
 
 ## Data
-- Data is loaded directly through a json variable (js/data.js) which was needed at the moment of development. But feel free to adjust to your needs. d3 accepts other types of data loading (e.g csv).
+- Data is loaded through a CSV file
+- The diagram was only adjusted to read 3 levels of data
+- Search Field is loaded with the same data as the d3 tree
 
-- Data folder provides a pyhthon script to convert a CSV file into json, which is then copied to the data.js file (work in progress to automate this piece)
-
-- The diagram was only adjusted to read 3 levels of data.
+## Demo
+You can access the working diagram directly on this repository' page at: https://bbgithub.dev.bloomberg.com/pages/dbohorquez1/d3-tree/
