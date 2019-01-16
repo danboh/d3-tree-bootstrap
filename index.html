@@ -3,17 +3,22 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Dynamic d3 Tree</title>
+	<title>Qlik Sense Structure Tree</title>
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/bootstrap-select.min.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 </head>
 
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
+	
+	<!-- Bootstrap Nav Menu -->
 	<ul class="navbar-nav mr-auto">
+	    <div class="navbar-header">
+			<a class="navbar-brand" href="#">QSEN Tree</a>
+		</div>
 		<div class="btn-group btn-group-toggle" data-toggle="buttons">
 			<label class="btn btn-secondary active">
 				<input type="radio" name="expand" id="expand_all_option" autocomplete="off" checked>Expand All
@@ -37,12 +42,27 @@
 			<label class="btn btn-secondary active">
 				<input type="checkbox" class="node_selection" name="node_selection" autocomplete="off"  id="node_selection_sheets" checked>Sheets
 			</label>
-		</div>		
+		</div>	
+
+		<li class="nav-item">
+			<a class="nav-link" href="#"></a>
+		</li>
+		
+		<li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Refresh Dataset">
+			<a class="btn btn-secondary" href="javascript:refresh()"><i class="fas fa-sync-alt"></i></a>
+		</li>
+		
+		<li class="nav-item invisible" id="data_refreshed_message">
+			<span class="nav-link"><span style="font-weight:bold;color:#FFF;">Data refreshed!</span></span>
+		</li>
+				
+		
 	</ul>
+
 	
+	<!-- Search Bootstrap Select -->
 	<div class="col-lg-5">
-		<!-- <input class="form-control mr-lg-2" type="search" placeholder="Search" aria-label="Search Node"> -->
-		<select class="selectpicker show-tick" data-live-search="true" title="Find a Stream, App or Sheet" data-width="100%">
+		<select class="selectpicker" data-live-search="true" title="Find a Stream, App or Sheet" data-width="100%" data-size="10">
 			<optgroup label="Streams" id="select_streams">
 			</optgroup>
 			<optgroup label="Apps" id="select_apps">
@@ -55,18 +75,15 @@
 
 </nav>
 
-	<!--<div class="container row mt-4">
-		<div class="col">
-			<button type="button" class="btn btn-danger" onclick="">Streams</button>
-			<button type="button" class="btn btn-primary" onclick="">Apps</button>
-			<button type="button" class="btn btn-outline-dark" onclick="">Sheets</button>
-		</div>
-	</div>
-	 -->
-	
+	<!-- Side Panel Modal -->
 	<div id="slider" class="side-panel " >
 		<span class="slider-title" id="sheet_name"></span><br/>
+		<span>Created at: </span><span id="created_at"></span><br/>
+		<span>Published on: </span><span id="published_on"></span><br/>
+		<span>Last Loaded: </span><span id="last_loaded"></span><br/>
 		<hr/>
+		<p style="font-weight: bold">Owner:</p>
+		<p id="owner"></p>
 		<p style="font-weight: bold">Application:</p>
 		<p id="app_name"></p>
 		<p style="font-weight: bold">Stream:</p>
@@ -83,15 +100,56 @@
 			<a href="" id="node_url" role="button" class="btn btn-primary" target="_new">Jump to</a>
 			<span class="slider-close"><button type="button" id="slider-close-button" class="btn btn-outline-dark">Close</button></span>		
 		</div>
-		
 	</div>
 	
-	<div id="render"></div>
+	<!-- Loading Modal -->
+	<div id="loading_modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Refreshing dataset...</h5>
+					<!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button> -->
+				</div>
+				<div class="modal-body">
+					<p class="text-center"><img src="css/loading.gif" alt="Loading..."></p>
+				</div>
+				<!-- <div class="modal-footer">
+					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div> -->
+			</div>
+		</div>
+	</div>
 	
+	<div id="legend">
+		<table width="100%">
+			<tr>
+				<td class="" style="font-size: 20px">Root</td>
+				<td class="text-center"><div class="circle" style="background: #28a745"></div></td>
+			</tr>
+			<tr>
+				<td class="" style="font-size: 20px">Stream</td>
+				<td class="text-center"><div class="circle" style="background: #dc3545"></div></td>
+			</tr>
+			<tr>
+				<td class="" style="font-size: 20px">App</td>
+				<td class="text-center"><div class="circle" style="background: #007bff"></div></td>
+			</tr>
+			<tr>
+				<td class="" style="font-size: 20px">Sheet</td>
+				<td class="text-center"><div class="circle" style="background: #FFF; border-width: 2px; border-style: solid; border-color: #000;"></div></td>
+			</tr>
+		</table>
+	</div>
+	
+	<!-- d3 Tree -->
+	<div id="render"></div>
+
 	<script src="js/jquery-3.2.1.slim.min.js"></script>
 	<script src="js/jquery.slidereveal.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/data.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 	<script src="js/d3.v3.min.js"></script>
 	<script src="js/index.js"></script>
 	<script src="js/bootstrap-select.min.js"></script>
@@ -103,6 +161,7 @@
 			overlay: true	
 		});	
 	</script>
+	
 </body>
 
 </html>
